@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  clickhouse:
+    image: yandex/clickhouse-server
+    volumes:
+      - ./.volumes/clickhouse:/var/lib/clickhouse
+    ports:
+      - 9000:9000
+  client:
+    image: yandex/clickhouse-server
+    entrypoint: ["clickhouse", "client", "-h", "clickhouse"]
