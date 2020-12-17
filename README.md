@@ -19,3 +19,7 @@ make cleanup-schema init-schema
 ```
 make import
 ```
+
+## Запуск клиента
+
+Клиента к clickhouse можно получить командой `docker-compose run client`.
