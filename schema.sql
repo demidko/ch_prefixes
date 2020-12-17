@@ -1,7 +1,7 @@
 CREATE TABLE metrics (
     dateTime DateTime,
     userId UInt32,
-    ring FixedString(32),
+    ring Nullable(FixedString(32)),
     name LowCardinality(String),
     value Float32,
     attributes Array(Tuple(LowCardinality(String), String))
