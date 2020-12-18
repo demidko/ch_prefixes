@@ -5,8 +5,8 @@ from urllib.parse import urlparse, parse_qs
 def convert(input):
     parts = input.split(" ")
     url = parts[9]
-    ring = parts[19]
-    user_id = parts[18]
+    ring = unquote(parts[19])
+    user_id = unquote(parts[18])
     date_time = parts[0]
 
     # Приводим дату к формату YYYY-MM-DD HH:mm:ss
@@ -18,11 +18,11 @@ def convert(input):
         return None
     action = query['action'][0]
 
-    user_id = int(unquote(user_id), 16)
-    
-    ring = unquote(ring)
+    user_id = int(user_id, 16) if len(user_id) > 0 else 0
 
     value = 1.0
+    if 'keyName' in query and query['keyName'][0].isdigit():
+        value = float(query['keyName'][0])
     
     return [date_time, user_id, ring, action, value, tuple_from_dict(query)]
 
