@@ -1,6 +1,8 @@
 # coding=utf8
-import sys, csv
+import sys, csv, re
 from urllib.parse import urlparse, parse_qs
+
+digit_only = re.compile("[0-9]+")
 
 def convert(input):
     parts = input.split(" ")
@@ -24,7 +26,7 @@ def convert(input):
     user_id = int(user_id, 16) if len(user_id) > 0 else 0
 
     value = 1.0
-    if 'keyName' in query and query['keyName'][0].isdigit():
+    if 'keyName' in query and digit_only.fullmatch(query['keyName'][0]):
         value = float(query['keyName'][0])
     
     return [date_time, user_id, ring, action, value, tuple_from_dict(query)]
@@ -41,8 +43,11 @@ def tuple_from_dict(dict):
     if 'action' in dict:
         del dict['action']
 
-    tuples = ["('{}','{}')".format(name, values[0]) for name, values in dict.items()]
+    tuples = ["('{}','{}')".format(name, escape(values[0])) for name, values in dict.items()]
     return "[" + ",".join(tuples) + "]"
+
+def escape(value):
+    return value.replace("\\","\\\\").replace("'","\\'")
 
 def unquote(input):
     if len(input) >= 2 and input[0] == '"' and input[-1] == '"':
@@ -53,6 +58,11 @@ def unquote(input):
 if __name__ == "__main__":
     out = csv.writer(sys.stdout)
     for line in sys.stdin:
-        columns = convert(line)
-        if columns:
-            out.writerow(columns)
+        try:
+            columns = convert(line)
+            if columns:
+                out.writerow(columns)
+        except:
+            # Если возникли ошибки при парсинге индивидуальных строк, пропускаем. Скрипт используется
+            # сугубо в тестовых целях
+            pass
