@@ -12,7 +12,7 @@ def convert(input):
     # Приводим дату к формату YYYY-MM-DD HH:mm:ss
     date_time = date_time[0:10] + " " + date_time[11:19]
 
-    if ring == "-":
+    if len(ring) != 32:
         ring = None
 
     url_parts = urlparse(url)
@@ -36,8 +36,10 @@ def tuple_from_dict(dict):
     На выходе (строка): [('one', '1'),('two','2')]
     '''
 
-    del dict['_']
-    del dict['action']
+    if '_' in dict:
+        del dict['_']
+    if 'action' in dict:
+        del dict['action']
 
     tuples = ["('{}','{}')".format(name, values[0]) for name, values in dict.items()]
     return "[" + ",".join(tuples) + "]"
@@ -49,4 +51,8 @@ def unquote(input):
         return input
 
 if __name__ == "__main__":
-    convert()
+    out = csv.writer(sys.stdout)
+    for line in sys.stdin:
+        columns = convert(line)
+        if columns:
+            out.writerow(columns)
