@@ -12,6 +12,9 @@ def convert(input):
     # Приводим дату к формату YYYY-MM-DD HH:mm:ss
     date_time = date_time[0:10] + " " + date_time[11:19]
 
+    if ring == "-":
+        ring = None
+
     url_parts = urlparse(url)
     query = parse_qs(url_parts.query)
     if 'action' not in query:
