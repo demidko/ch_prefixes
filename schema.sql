@@ -7,5 +7,14 @@ CREATE TABLE metrics (
     attributes Array(Tuple(LowCardinality(String), String))
 )
 ENGINE=MergeTree
-ORDER BY (dateTime, name, userId)
-PARTITION BY toYYYYMMDD(dateTime)
+ORDER BY (name, userId)
+PARTITION BY toYYYYMMDD(dateTime);
+
+CREATE MATERIALIZED VIEW sessions
+ENGINE = MergeTree
+ORDER BY (userId)
+PARTITION BY toYYYYMMDD(startDate)
+AS
+SELECT any(userId) userId, ring, min(dateTime) startDate, max(dateTime) endDate, count(*) as count
+FROM metrics
+GROUP BY ring
