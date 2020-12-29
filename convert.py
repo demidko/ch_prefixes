@@ -29,13 +29,14 @@ def convert(input):
     if 'keyName' in query and digit_only.fullmatch(query['keyName'][0]):
         value = float(query['keyName'][0])
     
-    return [date_time, user_id, ring, action, value, tuple_from_dict(query)]
+    attr_names, attr_values = tuple_from_dict(query)
+    return [date_time, user_id, ring, action, value, attr_names, attr_values]
 
 def tuple_from_dict(dict):
     '''
     Формирует строковое представление tuple для Clickhouse из словаря:
     На входе: {'one': '1', 'two': '2'}
-    На выходе (строка): [('one', '1'),('two','2')]
+    На выходе две строки: ['one', 'two'] и ['1', '2']
     '''
 
     if '_' in dict:
@@ -44,7 +45,9 @@ def tuple_from_dict(dict):
         del dict['action']
 
     tuples = ["('{}','{}')".format(name, escape(values[0])) for name, values in dict.items()]
-    return "[" + ",".join(tuples) + "]"
+    keys = ["'{}'".format(escape(key)) for key in dict.keys()]
+    values = ["'{}'".format(escape(value[0])) for value in dict.values()]
+    return "[" + ",".join(keys) + "]", "[" + ",".join(values) + "]"
 
 def escape(value):
     return value.replace("\\","\\\\").replace("'","\\'")

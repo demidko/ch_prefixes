@@ -1,10 +1,6 @@
-SELECT cityHash64(groupId) % 2 AS group, varSamp(nominator), count(*) FROM (
-    WITH arrayFirst(i -> i.1 == 'briefType', attributes).2 AS brief
-    SELECT
-        userId as groupId,
-        countIf(1, brief == 'block') as nominator
+SELECT cityHash64(groupId) % 2 AS group, varSamp(value), count(*) FROM (
+    WITH indexOf(attrNames, 'briefType') AS briefType, indexOf(attrNames, 'searchPos') AS searchPos
+    SELECT userId as groupId, toUInt8(attrValues[searchPos]) as value
     FROM metrics
-    WHERE userId != 0
-    AND name = 'viewdir_item_click'
-    GROUP BY groupId
+    WHERE name = 'viewdir_item_click' AND attrValues[briefType] = 'block' and userId > 0
 ) GROUP BY group

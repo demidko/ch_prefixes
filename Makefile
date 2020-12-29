@@ -3,13 +3,13 @@
 PYTHON:=python3
 
 init-schema: schema.sql
-	docker-compose run client < $<
+	docker-compose run client --multiquery < $<
 
 cleanup-schema: cleanup.sql
-	docker-compose run client < $<
+	docker-compose run client --multiquery < $<
 
 clean:
-	docker-compose run client -q "TRUNCATE TABLE metrics"
+	docker-compose run client --multiquery -q "TRUNCATE TABLE metrics; TRUNCATE TABLE sessions;"
 
 import: import.csv.gz
 	zcat $< | docker-compose run client -q "INSERT INTO metrics FORMAT CSV"

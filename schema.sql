@@ -4,7 +4,8 @@ CREATE TABLE metrics (
     ring Nullable(FixedString(32)),
     name LowCardinality(String),
     value Float32,
-    attributes Array(Tuple(LowCardinality(String), String))
+    attrNames Array(LowCardinality(String)),
+    attrValues Array(String)
 )
 ENGINE=MergeTree
 ORDER BY (name, userId)
@@ -15,6 +16,6 @@ ENGINE = MergeTree
 ORDER BY (userId)
 PARTITION BY toYYYYMMDD(startDate)
 AS
-SELECT any(userId) userId, ring, min(dateTime) startDate, max(dateTime) endDate, count(*) as count
+SELECT userId, ring, min(dateTime) startDate, max(dateTime) endDate, count(*) as count
 FROM metrics
-GROUP BY ring
+GROUP BY userId, ring;
