@@ -1,8 +1,18 @@
+
+/* среднее количество переходов по блочным объявлениям на одну выдачу для пользователей из гугла */
+
+/*
+                                  количество открытых блочных объявлений в сессиях из гугла
+  среднее количество переходов = -----------------------------------------------------------
+                                        количество выдач в сессиях из гугла
+*/
+
+
 /* наружний запрос группирует сессии по группам сплит/контроль */
-SELECT sessionId % 2 AS group, avg(metric), varSamp(metric) FROM
-(
+SELECT sessionId % 2 AS group, sum(num) numerator, sum(denom) as denominamtor, sum(num) / sum(denom)
+FROM (
     /* этот запрос расчитывает значение метрики для индивидуальной сессии */
-    SELECT sessionId, sum(numerator) / sum(denominator) as metric
+    SELECT sessionId, sum(numerator) as num, sum(denominator) as denom
     FROM (
         /* внутренний запрос маскирует и именует (numerator/denominator) интересующие метрики (без группировки) */
         WITH
@@ -28,6 +38,7 @@ SELECT sessionId % 2 AS group, avg(metric), varSamp(metric) FROM
                 SELECT DISTINCT cityHash64((userId, ring))
                 FROM metrics
                 WHERE name = 'firsthit' and domain(attrValues[ref]) = 'www.google.com'
+                AND (userId != 0 OR ring IS NOT NULL)
             )
     )
     GROUP BY sessionId
