@@ -9,7 +9,10 @@
 
 
 /* наружний запрос группирует сессии по группам сплит/контроль */
-SELECT sessionId % 2 AS group, sum(num) numerator, sum(denom) as denominamtor, sum(num) / sum(denom)
+SELECT sessionId % 2 AS group, sum(num) numerator, sum(denom) as denominamtor,
+    toDecimal32(sum(num) / sum(denom), 4) ratio,
+    toDecimal32(varSamp(num), 4) numeratorVariance,
+    toDecimal32(varSamp(denom), 4) denominatorVariance
 FROM (
     /* этот запрос расчитывает значение метрики для индивидуальной сессии */
     SELECT sessionId, sum(numerator) as num, sum(denominator) as denom
