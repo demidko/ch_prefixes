@@ -23,22 +23,22 @@ FROM (
             (name = 'viewdir_item_click' and attrValues[indexOf(attrNames, 'briefType')] = 'block') AS numeratorMask,
             (name = 'viewdir_feed_stat') AS denominatorMask
         SELECT
-            /* здесь и далее в качестве sessionId используется хеш от ринга/пользователя. В итоге sessionId должен стать
-               самостоятельным ключом */
-            cityHash64((userId, ring)) as sessionId,
+            /* здесь и далее в качестве sessionId используется хеш от ринга/пользователя. В итоге sessionId должен стать */
+            /* самостоятельным ключом */
+            sipHash64((userId, ring)) as sessionId,
             /* маскированное значение маски для числителя */
             (numeratorMask ? value : 0) numerator,
             /* маскированное значение маски для знаменателя */
             (denominatorMask ? 1 : 0) denominator
         FROM metrics
         WHERE
-            /* дублируем имена используемых метрик, чтобы оптимизатор понимал что
-            не требуется делать scan всего partition'а (metrics отсортирована по name) */
+            /* дублируем имена используемых метрик, чтобы оптимизатор понимал что */
+            /* не требуется делать scan всего partition'а (metrics отсортирована по name) */
             name IN('viewdir_item_click', 'viewdir_feed_stat') AND
-            cityHash64((userId, ring)) IN (
+            sipHash64((userId, ring)) IN (
                 /* определяет список сессий, которые являются предметом анализа */
                 WITH indexOf(attrNames, 'referrer') AS ref
-                SELECT DISTINCT cityHash64((userId, ring))
+                SELECT DISTINCT sipHash64((userId, ring))
                 FROM metrics
                 WHERE name = 'firsthit' and domain(attrValues[ref]) = 'www.google.com'
                 AND (userId != 0 OR ring IS NOT NULL)
