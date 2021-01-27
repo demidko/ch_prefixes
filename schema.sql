@@ -120,14 +120,15 @@ FROM
          /*
          Несмотря на то что мы уже находимся в default, этот запрос не сработает, выдав ошибку несоответствия столбцов:
 
-         Received exception from server (version 20.4.4):
-         Code: 47. DB::Exception: Received from localhost:9000.
+         Code: 47. DB::Exception:
+         Received from clickhouse:9000.
          DB::Exception:
-         Missing columns: 'l.docs' while processing query: 'SELECT lemma, city, date, packet FROM default.log ARRAY JOIN docs GLOBAL ALL INNER JOIN default.docs_to_packets_week ON doc = l.docs WHERE (toDate(date) > subtractDays(today(), 1)) AND (city != 0)',
+         Missing columns: 'l.docs'
+         while processing query: 'SELECT lemma, city, date, packet FROM default.log ARRAY JOIN docs GLOBAL ALL INNER JOIN default.docs_to_packets_week ON doc = l.docs WHERE (toDate(date) > subtractDays(today(), 1)) AND (city != 0)',
          required columns: 'lemma' 'doc' 'date' 'l.docs' 'packet' 'city',
-         source columns: '_shard_num' 'delivery_local' 'section_width' 'protected_deals' 'has_images' 'condition' 'good_present_state' 'type' 'price_range' 'realty_repair' 'wheel_car_year' 'construction_status' 'agent_type' 'flat_type' 'district' 'engine' 'wall_material' 'dir' 'wheel_spike' 'wheel_season' 'document_offset' 'lts_address' 'query' 'day' 'ext_docs' 'floor_range' 'exact_feed_count' 'model' 'docs' 'tire_height' 'wheel_car_variation' 'clicks' 'city' 'lemma' 'year_range' 'run_flat' 'predestination' 'section_height' 'page' 'area_total_range' 'in_set_quantity' 'date' 'wheel_diameter' 'generation' 'wheel_car_model' 'body' 'ring' 'client_date' 'tire_width',
+         maybe you meant:  '['lemma']' '['docs']' '['date']' '['docs']' '['city']',
          joined columns: 'doc' 'packet',
-         arrayJoin columns: 'docs'.
+         arrayJoin columns: 'docs'
          */
 
      FROM log AS l
