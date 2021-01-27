@@ -1,4 +1,4 @@
-# Sandbox для экспериментов с clickhouse
+# Sandbox для экспериментов с ClickHouse
 
 ## Запуск сервера
 
