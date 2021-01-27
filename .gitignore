@@ -4,3 +4,4 @@ __pycache__
 *.pyc
 access.log.xz
 import.csv.gz
+.idea
